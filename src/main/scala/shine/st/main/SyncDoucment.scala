@@ -4,8 +4,9 @@ import java.io.File
 
 import com.typesafe.config.ConfigFactory
 import org.apache.commons.io.FileUtils
-import shine.st.commons.amazon.S3
-import shine.st.commons.{IOUtils, OSValidator}
+import shine.st.common.IOUtils
+import shine.st.common.aws.S3
+import shine.st.commons.OSValidator
 
 /**
   * Created by stevenfanchiang on 2016/3/25.
@@ -27,8 +28,8 @@ object SyncDoucment {
           S3.putObject(syncBucket, zipFile)
 
         case "download" =>
-          val docObject = S3.getObject(syncBucket, dirName + ".zip")
-          IOUtils.inputStreamToFile(docObject.getObjectContent, zipFileName)
+          val docObjectContent = S3.getObjectContent(syncBucket, dirName + ".zip")
+          IOUtils.inputStreamToFile(docObjectContent, zipFileName)
           FileUtils.deleteDirectory(new File(absolutePath))
           IOUtils.unzip(zipFileName, path)
 
