@@ -3,6 +3,8 @@ package shine.st.commons
 import java.io._
 import java.util.zip.{ZipEntry, ZipInputStream, ZipOutputStream}
 
+import shine.st.commons.enums.OS
+
 /**
   * Created by stevenfanchiang on 2016/3/25.
   */
@@ -38,7 +40,10 @@ object IOUtils {
       }
 
       while (ze != null) {
-        val fileName = ze.getName()
+        val fileName = OSValidator.whatOS() match {
+          case OS.MAC => ze.getName.replace("\\","/")
+          case OS.WINDOWS => ze.getName.replace("/","\\")
+        }
 
         val unzipFile = new File(s"$outputFolder${File.separator}$fileName")
         if (!unzipFile.getParentFile.exists())
@@ -68,7 +73,6 @@ object IOUtils {
   def zip(fileName: String, zipOutput: String) = {
     val source = new File(fileName)
     val relativelyPath = source.getAbsolutePath.substring(0, source.getAbsolutePath.indexOf(source.getName))
-    println(relativelyPath)
 
     def generateFileList(node: File, fileNameList: List[String]): List[String] = {
       if (node.isFile)
